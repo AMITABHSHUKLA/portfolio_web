@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "node scripts/clean-next.mjs",
     "dev": "next dev",
+    "dev:clean": "npm run clean && next dev",
     "build": "next build",
     "start": "next start",
     "prepare": "husky",
@@ -16,6 +18,7 @@
     "@react-three/fiber": "^9.0.4",
     "@types/three": "^0.173.0",
     "gsap": "^3.12.7",
+    "maath": "^0.10.8",
     "next": "15.5.7",
     "react": "^19.0.0",
     "react-device-detect": "^2.2.3",

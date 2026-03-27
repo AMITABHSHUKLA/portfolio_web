@@ -5,12 +5,19 @@ import { isMobile } from 'react-device-detect';
 /**
  * Partially AI Generated
  */
-const ProgressLoader = ({ progress }: { progress: number }) => {
+const ProgressLoader = ({
+  progress,
+  complete = false,
+}: {
+  progress: number;
+  /** When true, dismiss overlay (e.g. timeout fallback while progress is still 0). */
+  complete?: boolean;
+}) => {
   const strokeWidth = 3;
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+  const [windowSize, setWindowSize] = useState(() => ({
+    width: typeof window !== "undefined" ? window.innerWidth : 1024,
+    height: typeof window !== "undefined" ? window.innerHeight : 768,
+  }));
 
   // Effect to update dimensions on window resize
   useEffect(() => {
@@ -54,6 +61,10 @@ const ProgressLoader = ({ progress }: { progress: number }) => {
   // If size is too small (e.g., window resized very small), don't render the SVG
   if (svgWidth <= strokeWidth || svgHeight <= strokeWidth) {
       return null; // Or return a minimal placeholder
+  }
+
+  if (complete) {
+    return null;
   }
 
   if (isMobile) {

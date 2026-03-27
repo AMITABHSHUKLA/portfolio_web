@@ -1,5 +1,6 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
+import { Source_Sans_3 } from "next/font/google";
 import localFont from 'next/font/local';
 import "./globals.css";
 
@@ -11,6 +12,13 @@ const soriaFont = localFont({
 const vercettiFont = localFont({
   src: "../public/Vercetti-Regular.woff",
   variable: "--font-vercetti",
+});
+
+/** Single family for DOM hero heading + intro (overlay). */
+const heroStackFont = Source_Sans_3({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-hero-stack",
 });
 
 export const metadata: Metadata = {
@@ -68,11 +76,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="overscroll-y-none">
       <body
-        className={`${soriaFont.variable} ${vercettiFont.variable} font-sans antialiased`}
+        className={`${soriaFont.variable} ${vercettiFont.variable} ${heroStackFont.variable} font-sans antialiased`}
       >
         {children}
+        <GoogleAnalytics gaId="G-7WD4HM3XRE" />
       </body>
-      <GoogleAnalytics gaId={'G-7WD4HM3XRE'}/>
     </html>
   );
 }

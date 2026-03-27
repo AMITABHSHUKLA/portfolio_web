@@ -1,7 +1,7 @@
 'use client';
 
+import { useLoadReady } from '@/app/hooks/useLoadReady';
 import { useScrollStore } from '@/app/stores/scrollStore';
-import { useProgress } from '@react-three/drei';
 import { usePortalStore, useThemeStore } from '@stores';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';
@@ -13,12 +13,12 @@ const AwwardsBadge = () => {
   const isPortalActive = usePortalStore((state) => !!state.activePortalId);
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   const color = useThemeStore((state) => state.theme.color);
-  const { progress } = useProgress();
+  const loadReady = useLoadReady();
 
   const [loaded, setLoaded] = useState(false);
   const [startAnimation, setStartAnimation] = useState(false);
 
-  useEffect(() => { setLoaded(progress === 100) }, [progress]);
+  useEffect(() => { setLoaded(loadReady) }, [loadReady]);
 
   useEffect(() => {
     if (loaded) {

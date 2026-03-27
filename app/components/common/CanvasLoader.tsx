@@ -7,7 +7,11 @@ import gsap from "gsap";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 
+import { useLoadReady } from "@/app/hooks/useLoadReady";
 import { useThemeStore } from "@stores";
+
+import { SpaceStarsCanvas } from "@/app/components/models/SpaceStarBackground";
+import HeroContentOverlay from "@/app/components/hero/HeroContentOverlay";
 
 import AwwardsBadge from "./AwwardsBadge";
 import Preloader from "./Preloader";
@@ -21,6 +25,7 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundColor = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
+  const loadReady = useLoadReady();
   const [canvasStyle, setCanvasStyle] = useState<React.CSSProperties>({
     position: "absolute",
     top: 0,
@@ -38,41 +43,36 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
         width: 'calc(100% - 2rem)',
         height: 'calc(100% - 2rem)',
       };
-      setCanvasStyle({ ...canvasStyle, ...borderStyle})
+      setCanvasStyle((prev) => ({ ...prev, ...borderStyle }));
     }
   }, [isMobile]);
-
-  useGSAP(() => {
-    if (progress === 100) {
-      gsap.to('.base-canvas', { opacity: 1, duration: 3, delay: 1 });
-    }
-  }, [progress]);
 
   useGSAP(() => {
     gsap.to(ref.current, {
       backgroundColor: backgroundColor,
       duration: 1,
     });
-    gsap.to(canvasRef.current, {
-      backgroundColor: backgroundColor,
-      duration: 1,
-      ...noiseOverlayStyle,
-    });
   }, [backgroundColor]);
-
-  const noiseOverlayStyle = {
-    backgroundBlendMode: "soft-light",
-    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E\")",
-    backgroundRepeat: "repeat",
-    backgroundSize: "100px",
-  };
 
   return (
     <div className="h-[100dvh] wrapper relative">
       <div className="h-[100dvh] relative" ref={ref}>
-        <Canvas className="base-canvas"
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <SpaceStarsCanvas />
+        </div>
+        <Canvas className="base-canvas relative z-[1]"
           shadows
-          style={canvasStyle}
+          gl={{ alpha: true, antialias: true }}
+          onCreated={({ gl, scene }) => {
+            gl.setClearColor(0x000000, 0);
+            scene.background = null;
+          }}
+          style={{
+            ...canvasStyle,
+            opacity: loadReady ? 1 : 0,
+            transition: loadReady ? "opacity 3s ease 1s" : "none",
+            background: 'transparent',
+          }}
           ref={canvasRef}
           dpr={[1, 2]}>
           {/* <Perf/> */}
@@ -88,8 +88,9 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
           </Suspense>
           <AdaptiveDpr pixelated/>
         </Canvas>
-        <ProgressLoader progress={progress} />
+        <ProgressLoader progress={progress} complete={loadReady} />
       </div>
+      <HeroContentOverlay />
       <AwwardsBadge />
       <ThemeSwitcher />
       <ScrollHint />

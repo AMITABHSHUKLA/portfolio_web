@@ -23,61 +23,87 @@ const TextWindow = () => {
     font: "./soria-font.ttf",
   };
 
+  /** Stronger outline / stroke for a glossy, legible “glass edge” look (no motion). */
+  const glossyTextProps = {
+    fillOpacity: 1,
+    strokeWidth: 0.02,
+    strokeOpacity: 0.92,
+    outlineWidth: 0.022,
+    outlineOpacity: 0.88,
+  };
+
   return (
     <group position={[0, -0.3, 0]} ref={windowRef}>
-
-      <Text color="white" anchorX="left" anchorY="middle"
-        fontSize={1.3}
+      <Text color="#ff2a2a" anchorX="left" anchorY="middle"
+        strokeColor="#ffc8c8"
+        outlineColor="#4a0000"
+        fontSize={1.2}
         position={[0.12, 0, 0]}
+        {...glossyTextProps}
         {...fontProps}
         scale={[1, -1, 1]}
         rotation={[0, 0,  -Math.PI / 2]}>
-        FRONTEND ENGINEER
+        AI ENGINEER
       </Text>
 
-      <Text color="white" anchorX="right" anchorY="middle"
+      <Text color="#ffb84d" anchorX="right" anchorY="middle"
+        strokeColor="#fff1d4"
+        outlineColor="#5c3200"
         {...fontProps}
+        {...glossyTextProps}
         scale={[-1, -1, 1]}
-        fontSize={1.3}
+        fontSize={1.2}
         position={[0.12, 0, -1.4]}
         rotation={[0, 0,  -Math.PI / 2]}>
-        DESIGNER. DEVELOPER
+        QUERY KEY VALUE
       </Text>
 
       <group position={[-0.45, 0, -0.3]}>
-        <Text color="white" anchorX="left" anchorY="middle"
+        <Text color="#d4a3ff" anchorX="left" anchorY="middle"
+          strokeColor="#f5e8ff"
+          outlineColor="#3d0f5c"
           {...fontProps}
+          {...glossyTextProps}
           scale={[1, -1, 1]}
-          fontSize={0.8}
+          fontSize={1.2}
           rotation={[0, -Math.PI / 2,  -Math.PI / 2]}>
-          DESIGNER. DUMBASS.
+          TRANSFORMERS
         </Text>
 
-        <Text color="white" anchorX="left" anchorY="middle"
+        <Text color="#b8f0ff" anchorX="left" anchorY="middle"
+          strokeColor="#ffffff"
+          outlineColor="#063a52"
           {...fontProps}
+          {...glossyTextProps}
           scale={[1, -1, 1]}
-          fontSize={0.8}
+          fontSize={1.2}
           position={[0, 0, -0.6]}
           rotation={[0, -Math.PI / 2,  -Math.PI / 2]}>
-          DJ. MELOMANIAC
+          ATTENTION
         </Text>
       </group>
 
       <group position={[0.45, 0, -0.3]}>
-        <Text color="white" anchorX="right" anchorY="middle"
+        <Text color="#e8e8f0" anchorX="right" anchorY="middle"
+          strokeColor="#ffffff"
+          outlineColor="#303048"
           {...fontProps}
+          {...glossyTextProps}
           scale={[-1, -1, 1]}
-          fontSize={0.8}
+          fontSize={0.7}
           rotation={[0, -Math.PI / 2,  -Math.PI / 2]}>
-          GAMER. CREATIVE
+          COMPUTER VISION
         </Text>
-        <Text color="white" anchorX="right" anchorY="middle"
+        <Text color="#ffe566" anchorX="right" anchorY="middle"
+          strokeColor="#fffce0"
+          outlineColor="#5c4a00"
           {...fontProps}
+          {...glossyTextProps}
           scale={[-1, -1, 1]}
-          fontSize={0.8}
+          fontSize={0.7}
           position={[0, 0, -0.6]}
           rotation={[0, -Math.PI / 2,  -Math.PI / 2]}>
-          CREATIVE. OPTIMIST
+          BACKPROPOGATION.
         </Text>
       </group>
     </group>

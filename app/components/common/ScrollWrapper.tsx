@@ -15,9 +15,10 @@ const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) 
 
   useFrame((state, delta) => {
     if (data) {
-      const a = data.range(0, 0.3);
-      const b = data.range(0.3, 0.5);
-      const d = data.range(0.85, 0.18);
+      // Hold briefly on intro before camera transitions begin.
+      const a = data.range(0.08, 0.28);
+      const b = data.range(0.38, 0.42);
+      const d = data.range(0.86, 0.14);
 
       if (!isActive) {
         camera.rotation.x = THREE.MathUtils.damp(camera.rotation.x, -0.5 * Math.PI * a, 5, delta);

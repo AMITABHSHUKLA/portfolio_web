@@ -23,22 +23,23 @@ const Work = () => {
   // the scroll event.
   useEffect(() => {
     if (isActive) {
-      const scrollWrapper = document.querySelector('div[style*="z-index: -1"]') as HTMLElement;
-      const originalScrollWrapper = document.querySelector('div[style*="z-index: 1"]') as HTMLElement;
+      const scrollWrapper = document.querySelector('div[style*="z-index: -1"]') as HTMLElement | null;
+      const originalScrollWrapper = document.querySelector('div[style*="z-index: 1"]') as HTMLElement | null;
+      if (!scrollWrapper || !originalScrollWrapper) return;
       setScrollProgress(0);
-      scrollWrapper.addEventListener('scroll', handleScroll)
-      scrollWrapper.style.zIndex = '1';
-      originalScrollWrapper.style.zIndex = '-1';
+      scrollWrapper.addEventListener("scroll", handleScroll);
+      scrollWrapper.style.zIndex = "1";
+      originalScrollWrapper.style.zIndex = "-1";
     } else {
-      const scrollWrapper = document.querySelector('div[style*="z-index: 1"]') as HTMLElement;
-      const originalScrollWrapper = document.querySelector('div[style*="z-index: -1"]') as HTMLElement;
+      const scrollWrapper = document.querySelector('div[style*="z-index: 1"]') as HTMLElement | null;
+      const originalScrollWrapper = document.querySelector('div[style*="z-index: -1"]') as HTMLElement | null;
 
       if (scrollWrapper) {
-        scrollWrapper.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollWrapper.scrollTo({ top: 0, behavior: "smooth" });
         setScrollProgress(0);
-        scrollWrapper.removeEventListener('scroll', handleScroll);
-        scrollWrapper.style.zIndex = '-1';
-        originalScrollWrapper.style.zIndex = '1';
+        scrollWrapper.removeEventListener("scroll", handleScroll);
+        scrollWrapper.style.zIndex = "-1";
+        if (originalScrollWrapper) originalScrollWrapper.style.zIndex = "1";
       }
     }
   }, [isActive]);

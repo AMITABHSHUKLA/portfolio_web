@@ -7,35 +7,54 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
 import { WORK_TIMELINE } from "@constants";
-import { WorkTimelinePoint } from "@types";
+import type { WorkTimelinePoint } from "@types";
+
+/** Off-white with a slight cream warmth (reads softer than pure #fff on dark scenes). */
+const WARM_WHITE = "#f5f0e6";
 
 const reusableLeft = new THREE.Vector3(-0.3, 0, -0.1);
 const reusableRight = new THREE.Vector3(0.3, 0, -0.1);
 
-const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number }) => {
+const DEFAULT_SUBTITLE_Y = -0.48;
+
+const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint; diff: number }) => {
   const getPoint = useMemo(() => {
     switch (point.position) {
-      case 'left': return reusableLeft;
-      case 'right': return reusableRight;
-      default: return new THREE.Vector3();
+      case "left":
+        return reusableLeft;
+      case "right":
+        return reusableRight;
+      default:
+        return new THREE.Vector3();
     }
   }, [point.position]);
 
-  const textAlign = point.position === 'left' ? 'right' : 'left';
+  const textAlign = point.position === "left" ? "right" : "left";
 
-  const textProps: Partial<TextProps> = useMemo(() => ({
-    font: "./Vercetti-Regular.woff",
-    color: "white",
-    anchorX: textAlign,
-    fillOpacity: 2 - 2 * diff,
-  }), [textAlign, diff]);
+  const textProps: Partial<TextProps> = useMemo(
+    () => ({
+      font: "./Vercetti-Regular.woff",
+      color: WARM_WHITE,
+      anchorX: textAlign,
+      anchorY: "top",
+      fillOpacity: 2 - 2 * diff,
+    }),
+    [textAlign, diff],
+  );
 
-  const titleProps = useMemo(() => ({
-    ...textProps,
-    font: "./soria-font.ttf",
-    fontSize: 0.6,
-    maxWidth: 3,
-  }), [textProps]);
+  const titleProps = useMemo(
+    () => ({
+      ...textProps,
+      font: "./Vercetti-Regular.woff",
+      fontSize: 0.3,
+      maxWidth: 4.2,
+      lineHeight: 1.18,
+    }),
+    [textProps],
+  );
+
+  const ySubtitle = point.subtitleY ?? DEFAULT_SUBTITLE_Y;
+  const subtitleX = point.subtitleOffsetX ?? 0;
 
   return (
     <group position={point.point} scale={isMobile ? 0.35 : 0.6}>
@@ -45,17 +64,18 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
       </Box>
       <group>
         <group position={getPoint}>
-          <Text {...textProps} fontSize={0.3} position={[-diff / 2, 0, 0]}>
+          {/* Fixed vertical stack: default anchorY was "middle", so year/title/subtitle all sat on one plane and collided. */}
+          <Text {...textProps} fontSize={0.19} position={[-diff / 2, 0.58, 0]}>
             {point.year}
           </Text>
-          <group position={[0, -0.5, 0]}>
-            <Text {...titleProps} fontSize={0.6} maxWidth={3} position={[0, -diff / 2, 0]}>
+          <group position={[0, 0.3, 0]}>
+            <Text {...titleProps} position={[0, 0, 0]}>
               {point.title}
             </Text>
-            <Text {...textProps} fontSize={0.2} position={[0, -0.4 - diff, 0]}>
-              {point.subtitle}
-            </Text>
           </group>
+          <Text {...textProps} fontSize={0.13} position={[subtitleX, ySubtitle, 0]}>
+            {point.subtitle}
+          </Text>
         </group>
       </group>
     </group>
@@ -64,13 +84,19 @@ const TimelinePoint = ({ point, diff }: { point: WorkTimelinePoint, diff: number
 
 const Timeline = ({ progress }: { progress: number }) => {
   const { camera } = useThree();
-  const isActive = usePortalStore((state) => state.activePortalId === 'work');
+  const isActive = usePortalStore((state) => state.activePortalId === "work");
   const timeline = useMemo(() => WORK_TIMELINE, []);
 
-  const curve = useMemo(() => new THREE.CatmullRomCurve3(timeline.map(p => p.point), false), [timeline]);
+  const curve = useMemo(() => new THREE.CatmullRomCurve3(timeline.map((p) => p.point), false), [timeline]);
   const curvePoints = useMemo(() => curve.getPoints(500), [curve]);
-  const visibleCurvePoints = useMemo(() => curvePoints.slice(0, Math.max(1, Math.ceil(progress * curvePoints.length))), [curvePoints, progress]);
-  const visibleTimelinePoints = useMemo(() => timeline.slice(0, Math.max(1, Math.round(progress * (timeline.length - 1) + 1))), [timeline, progress]);
+  const visibleCurvePoints = useMemo(
+    () => curvePoints.slice(0, Math.max(1, Math.ceil(progress * curvePoints.length))),
+    [curvePoints, progress],
+  );
+  const visibleTimelinePoints = useMemo(
+    () => timeline.slice(0, Math.max(1, Math.round(progress * (timeline.length - 1) + 1))),
+    [timeline, progress],
+  );
 
   const [visibleDashedCurvePoints, setVisibleDashedCurvePoints] = useState<THREE.Vector3[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -96,11 +122,15 @@ const Timeline = ({ progress }: { progress: number }) => {
         duration: 1,
         delay: isActive ? 0.4 : 0,
       });
-      tl.to(groupRef.current.position, {
-        y: isActive ? 0 : -2,
-        duration: 1,
-        delay: isActive ? 0.4 : 0,
-      }, 0);
+      tl.to(
+        groupRef.current.position,
+        {
+          y: isActive ? 0 : -2,
+          duration: 1,
+          delay: isActive ? 0.4 : 0,
+        },
+        0,
+      );
     }
 
     if (isActive) {
@@ -122,7 +152,7 @@ const Timeline = ({ progress }: { progress: number }) => {
   }, [isActive]);
 
   return (
-    <group position={[0, -0.1, -0.1]}>
+    <group position={[0, 1.1, -0.1]}>
       <Line points={visibleCurvePoints} color="white" lineWidth={3} />
       {visibleDashedCurvePoints.length > 0 && (
         <Line
@@ -136,7 +166,7 @@ const Timeline = ({ progress }: { progress: number }) => {
       )}
       <group ref={groupRef}>
         {visibleTimelinePoints.map((point, i) => {
-          const diff = Math.min(2 * Math.max(i - (progress * (timeline.length - 1)), 0), 1);
+          const diff = Math.min(2 * Math.max(i - progress * (timeline.length - 1), 0), 1);
           return <TimelinePoint point={point} key={i} diff={diff} />;
         })}
       </group>

@@ -25,7 +25,7 @@ const Experience = () => {
     const e = data.range(0.7, 0.2);
 
     if (groupRef.current && !isActive) {
-      groupRef.current.position.y = d > 0 ? -1 : -30;
+      groupRef.current.position.y = d > 0 ? -3 : -30;
       groupRef.current.visible = d > 0;
     }
 
@@ -60,8 +60,8 @@ const Experience = () => {
           {getTitle()}
         </group>
 
-        <group position={[0, -1, 0]} ref={groupRef}>
-          <GridTile title='WORK AND EDUCATION'
+        <group position={[0, -3, 0]} ref={groupRef}>
+          <GridTile title='WORK EXPERIENCE'
             id="work"
             color='#b9c6d6'
             textAlign='left'
